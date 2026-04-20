@@ -1,0 +1,36 @@
+###submit as sbatch 01_preprocessing/scripts/02_bwa_map.slurm
+
+#!/bin/bash
+#SBATCH --job-name=bwaNoc
+#SBATCH --partition=krypton
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
+#SBATCH --array=1-67
+#SBATCH -o logs/bwa_noc_%A_%a.out
+#SBATCH -e err/bwa_noc_%A_%a.err
+
+module load gnu python python-packages
+module load bwa samtools
+
+SPECIES="-" 
+
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" scripts/sample_list${SPECIES}.txt)
+TRIM_DIR="$01_trimmed_reads/${SPECIES}
+REFERENCE="$utils/${SPECIES}/reference/*.fasta"
+OUT_DIR="$02_alignments/${SPECIES}/"
+
+mkdir -p ${OUTDIR}
+
+RG="@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:ILLUMINA"
+
+bwa mem -t 8 \
+  -R "${RG}" \
+  ${REFERENCE} \
+  ${TRIM_DIR}/${SAMPLE}_1_val_1.fq.gz \
+  ${TRIM_DIR}/${SAMPLE}_2_val_2.fq.gz | \
+samtools view -Sb - > ${OUT_DIR}/${SAMPLE}.bam
+
+samtools sort -o ${OUT_DIR}/${SAMPLE}_sorted.bam ${OUT_DIR}/${SAMPLE}.bam
+samtools index ${OUT_DIR}${SAMPLE}_sorted.bam
+rm alignments/${SPECIES}/${SAMPLE}.bam
