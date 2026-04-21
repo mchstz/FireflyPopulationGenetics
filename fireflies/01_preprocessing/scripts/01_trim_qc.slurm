@@ -17,8 +17,10 @@ module load FastQC
 module load samtools
 module load cutadapt
 
-OUTDIR=/home/mstrehl/fireflies/01_preprocessing/01_trimmed_reads
-RAW=/home/mstrehl/fireflies/00_raw_reads
+OUTDIR=/01_preprocessing/01_trimmed_reads
+RAW=/00_raw_reads
+LIST=/01_preprocessing/utils/sample_list.txt
+
 
 SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" /utils/sample_list.txt)
 
