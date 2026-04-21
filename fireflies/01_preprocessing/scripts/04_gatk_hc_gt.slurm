@@ -6,17 +6,16 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=32G
 #SBATCH --array=1-67
-#SBATCH -o logs/hc_noc_%A_%a.out
-#SBATCH -e err/hc_noc_%A_%a.err
+#SBATCH -o /01_preprocessing/logs/hc_noc_%A_%a.out
+#SBATCH -e /01_preprocessing/err/hc_noc_%A_%a.err
 
 module load gnu python python-packages
 module load gatk
 
-SPECIES="-" 
-SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" utils/sample_list${SPECIES}.txt)
-REFERENCE="$utils/${SPECIES}/reference/*.fasta"
-BAM_DIR="$03_dedup/${SPECIES}/"
-OUT_DIR="$04_gatk/${SPECIES}/gvcf/"
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" utils/sample_list.txt)
+REFERENCE="$utils/reference/*.fasta"
+BAM_DIR="/01_preprocessing/03_dedup/"
+OUT_DIR="/01_preprocessing/04_gatk/gvcf/"
 
 mkdir -p "${OUTDIR}"
 
